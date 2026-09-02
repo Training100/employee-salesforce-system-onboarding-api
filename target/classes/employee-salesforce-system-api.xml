@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="employee-salesforce-system-api-httpListenerConfig">
+        <http:listener-connection host="${http.listener.host}" port="${http.listener.port}" />
+    </http:listener-config>
+    <apikit:config name="employee-salesforce-system-api-config" api="resource::6780c2f5-2f9a-4f87-ae1d-7db87c41df81:employee-salesforce-system-api:1.0.0:raml:zip:employee-salesforce-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration-properties doc:name="Configuration properties" doc:id="fee424fe-291a-4e56-84e0-4b72c7f61a67" file="properties/config-${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="3a2424df-a317-4f29-83ca-66109e1f59c0" name="env" value="preprod" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="df72f016-0eaf-4c6d-8e4e-d25f316171b5" file="secure-properties/config-${env}.yaml" key="${secure-key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<flow name="employee-salesforce-system-api-main">
+        <http:listener config-ref="employee-salesforce-system-api-httpListenerConfig" path="${http.listener.path}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="employee-salesforce-system-api-config" />
+		<error-handler ref="common-error-handler" />
+        
+    </flow>
+    <flow name="put:\employees:application\json:employee-salesforce-system-api-config">
+		<logger level="INFO" doc:name="Flow Start Logger" doc:id="1594515d-58aa-4b13-8ca3-e410ae34d85c" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]'/>
+		<flow-ref doc:name="calling put-employee-by-email-subflow" doc:id="b1829c35-3537-410c-b2ff-1b515d4299ab" name="put-employee-by-email-subflow"/>
+		<logger level="INFO" doc:name="Flow End Logger" doc:id="3f7e3dee-bd8c-407b-b7cf-02ee8e9df7dd" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]' />
+    </flow>
+    <flow name="get:\employees:employee-salesforce-system-api-config">
+		<logger level="INFO" doc:name="Flow Start Logger" doc:id="73f7996a-4b50-4f54-b677-5c0d249d886c" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]' />
+		<flow-ref doc:name="calling get-employee-by-email-subflow" doc:id="eb96af8a-0686-44ce-9175-c6344e136bec" name="get-employee-by-email-subflow"/>
+		<logger level="INFO" doc:name="Flow End Logger" doc:id="5aeeef22-6e29-4b6a-be56-fbbf6a67d3f3" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]' />
+    </flow>
+    <flow name="post:\employees:application\json:employee-salesforce-system-api-config">
+		<logger level="INFO" doc:name="Flow Start Logger" doc:id="98c6732f-8eec-4bdc-8c2c-f7b374dcb63f" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]' />
+		<flow-ref doc:name="calling post-employee-subflow" doc:id="e51fa8cb-0a6c-460f-8b23-0da6e145b9bd" name="post-employee-subflow"/>
+		<!-- [STUDIO:"Create"]<salesforce:create doc:name="Create" doc:id="1f114138-fa82-4613-abfd-9e1b245a5063" config-ref="Salesforce_Config"/> [STUDIO] -->
+		<logger level="INFO" doc:name="Flow End Logger" doc:id="74ce4694-e1cf-41e2-9125-8e5d61bad407" message='#[%dw 2.0		&#10;output application/json		&#10;---		&#10;{		&#10;"apiName" : app.name,		&#10;"flowName": flow.name,		&#10;"httpMethod": attributes.method,		&#10;"correlationid": correlationId,		&#10;"timestamp": now()		&#10;}]' />
+    </flow>
+</mule>

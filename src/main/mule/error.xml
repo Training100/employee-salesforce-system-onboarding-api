@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+        http://www.mulesoft.org/schema/mule/core
+        http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/ee/core
+        http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <configuration
+        defaultErrorHandler-ref="common-error-handler" />
+
+    <error-handler name="common-error-handler">
+
+        <!-- BAD REQUEST -->
+        <on-error-propagate type="APIKIT:BAD_REQUEST">
+            <logger level="INFO" doc:name="Logger" doc:id="dccfcf76-64c5-4066-858d-c6aefe1efe45" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]'/>
+			<ee:transform doc:name="Bad Request">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[
+%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+
+        <!-- NOT FOUND -->
+        <on-error-propagate type="APIKIT:NOT_FOUND">
+            <logger level="INFO" doc:name="Logger" doc:id="5f3522af-20d5-4de2-aa71-1e6409a97c36" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]' />
+			<ee:transform doc:name="Not Found">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+
+        <!-- METHOD NOT ALLOWED -->
+        <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+            <logger level="INFO" doc:name="Logger" doc:id="6226014e-071a-4bf0-81ac-a68812d5b07f" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]' />
+			<ee:transform doc:name="Method Not Allowed">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+
+        <!-- NOT ACCEPTABLE -->
+        <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+            <logger level="INFO" doc:name="Logger" doc:id="6ca68bc8-4cf3-4842-86d8-e9ab552d6518" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]' />
+			<ee:transform doc:name="Not Acceptable">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+
+        <!-- UNSUPPORTED MEDIA TYPE -->
+        <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+            <logger level="INFO" doc:name="Logger" doc:id="a2f7af13-9819-47ec-a030-665c92600839" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]' />
+			<ee:transform doc:name="Unsupported Media Type">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+
+        <!-- NOT IMPLEMENTED -->
+        <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+            <logger level="INFO" doc:name="Logger" doc:id="41df9b22-5531-46bb-882a-ff515cccafc3" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"error": {&#10;"code": vars.httpStatus default 500 as String,&#10;"message": error.errorMessage default "Internal Server Error",&#10;"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;"component": error.failingComponent default "Unknown",&#10;"timestamp": now(),&#10;"correlationId": correlationId&#10;}}]' />
+			<ee:transform doc:name="Not Implemented">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"error": {
+"code": vars.httpStatus default 500 as String,
+"message": error.errorMessage default "Internal Server Error",
+"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+"component": error.failingComponent default "Unknown",
+"timestamp": now(),
+"correlationId": correlationId
+}}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+        <on-error-propagate type="BUSINESS:NOT_FOUND" enableNotifications="true" logException="true">
+			<set-variable value="404" doc:name="Set Variable" doc:id="50a4e812-4019-4c8d-8f9f-d405cfc3fa99" variableName="httpStatus"/>
+			<logger level="INFO" doc:name="Logger" doc:id="8b869d8c-a035-4424-85bd-4ccc9fd08999" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"error": {&#10;		"code": vars.httpStatus as String,&#10;		"message": error.errorMessage default "Employee Not Found",&#10;		"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;		"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;		"component": error.failingComponent default "Unknown",&#10;		"timestamp": now(),&#10;		"correlationId": correlationId&#10;	}&#10;}]' />
+			<ee:transform doc:name="Not Implemented">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error": {
+		"code": vars.httpStatus as String,
+		"message": error.errorMessage default "Employee Not Found",
+		"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+		"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+		"component": error.failingComponent default "Unknown",
+		"timestamp": now(),
+		"correlationId": correlationId
+	}
+}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+        <on-error-propagate type="BUSINESS:BAD_REQUEST" enableNotifications="true" logException="true">
+            <set-variable value="400" doc:name="Set Variable" doc:id="fdaacc0e-3b93-4a83-8af5-9ffdfcce278d" variableName="httpStatus" />
+			<logger level="INFO" doc:name="Logger" doc:id="e6dafd6d-85bf-4e05-b17f-5b4a5a980142" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"error": {&#10;		"code": vars.httpStatus as String,&#10;		"message": error.errorMessage default "Bad Request",&#10;		"description": "Error handler failed: " ++ (error.description default "Description unavailable."),&#10;		"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",&#10;		"component": error.failingComponent default "Unknown",&#10;		"timestamp": now(),&#10;		"correlationId": correlationId&#10;	}&#10;}]' />
+			<ee:transform doc:name="Not Implemented">
+
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error": {
+		"code": vars.httpStatus as String,
+		"message": error.errorMessage default "Bad Request",
+		"description": "Error handler failed: " ++ (error.description default "Description unavailable."),
+		"type": (error.errorType.namespace ++ ":" ++ error.errorType.identifier) default "HANDLER:INTERNAL",
+		"component": error.failingComponent default "Unknown",
+		"timestamp": now(),
+		"correlationId": correlationId
+	}
+}]]></ee:set-payload>
+                </ee:message>
+
+                <ee:variables>
+                    <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                </ee:variables>
+
+            </ee:transform>
+        </on-error-propagate>
+
+    </error-handler>
+
+</mule>

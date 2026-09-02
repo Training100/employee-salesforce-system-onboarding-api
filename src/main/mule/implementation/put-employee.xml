@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="put-employee-by-email-subflow" doc:id="10f612b1-d29d-4d20-8a4d-936f6ba9beb2" >
+		<logger level="INFO" doc:name="DEBUG" doc:id="0a5f24ed-cfc9-4a3f-95d5-34583dc212aa" message="Req Payload: #[payload]	"/>
+		<ee:transform doc:name="Transform Message" doc:id="bfb998a9-56bb-485d-a85b-119ac0e6bf09" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0		
+output application/java		
+---		
+[{		
+Id:payload.id,		
+Email__c: attributes.queryParams.email,		
+Phone_Number__c: payload.phoneNumber,		
+Gender__c: payload.gender,		
+Aadhaar_Number__c: payload.aadhaarNumber,		
+Job_Role__c: payload.jobRole,		
+Department__c: payload.department,		
+Reporting_Manage__c: payload.manager,		
+Salary__c: payload.salary,		
+Experience_Years__c: payload.experience,		
+Employee_Level__c: payload.employeeLevel,		
+Employee_Grade__c: payload.grade,		
+City__c: payload.city,		
+Country__c: payload.country,		
+Employee_Status__c: payload.status		
+}]		]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="Employee_Registration_API__c" doc:name="Update" doc:id="8793f978-8e30-4222-97cb-0c64da334017" config-ref="Salesforce_Config"/>
+		<choice doc:name="Choice" doc:id="6713b93c-874a-4566-af53-16194e4b056d" >
+			<when expression="#[payload.successful==true]">
+				<ee:transform doc:name="Transform Message" doc:id="731ae837-3702-453e-a210-af1305def0a4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0	
+output application/json	
+---	
+{	
+message: "Employee updated successfully",	
+email: attributes.queryParams.email,	
+id: payload.id,	
+}	]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Salesforce response" doc:id="95ec5f21-90a8-48f9-aa0c-45567c343fa7" message="Salesforce response: #[payload]"/>
+				<set-variable value="#[204]" doc:name="Set Status Code" doc:id="c9176481-10a0-455b-9571-511f45e4440c" variableName="httpStatus" />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="48179960-59b6-4362-8ca4-6c3bbf647c02" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0	
+output application/json	
+---	
+{	
+"message": payload.items[0].message	
+}	
+	]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="f48b8fb7-a0d4-4ce2-accd-d23fab739591" message="#[payload]"/>
+				<raise-error doc:name="BUSINESS:BAD_REQUEST" doc:id="c401ad27-9015-49c2-abe9-c3d55c2b646e" type="BUSINESS:BAD_REQUEST" description="BAD_REQUEST"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>
