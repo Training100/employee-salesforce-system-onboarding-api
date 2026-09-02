@@ -1,0 +1,17 @@
+%dw 2.0
+
+type auto_736bc8e3_62e4_404c_a158_261accf202e8_Output_Payload = {
+  employeeLevel: "L1" | "L2" | "L3" | "L4" | "L5", 
+  country: String, 
+  phoneNumber: String, 
+  manager: String, 
+  city: String, 
+  grade: "G7" | "G8" | "G9" | "G5" | "G6", 
+  jobRole: "Java Developer" | "QA Engineer" | "DevOps Engineer" | "MuleSoft Developer", 
+  department: "Integration" | "Development" | "Infrastructure" | "Testing", 
+  salary: String, 
+  experience: Number, 
+  status: "Active" | "Inactive", 
+  _?: Any
+}
+

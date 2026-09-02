@@ -1,0 +1,8 @@
+http:
+ listener:
+  host: "0.0.0.0"
+  port: "8081"
+  path: "/api/*"
+  
+salesforce:
+  authurl: "https://login.salesforce.com/services/Soap/u/62.0"
